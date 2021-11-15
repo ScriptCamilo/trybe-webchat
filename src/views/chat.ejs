@@ -8,12 +8,21 @@
   <script src="http://localhost:3000/socket.io/socket.io.js"></script>
 </head>
 <body>
-  <form id="sendMessage">
-    <input type="text" id="messageInput" />
-    <button type="submit">Send</button>
-  </form>
+  <div>
+    <h2 id="online-user" data-testid="online-user"></h2>
+    <form id="nickname-form">
+      <input type="text" id="nickname-box" data-testid="nickname-box" placeholder="nickname" />
+      <button type="submit" data-testid="nickname-button">Send</button>
+    </form>
+  </div>
+  <div>
+    <form id="message-form">
+      <input type="text" id="message-box" data-testid="message-box" placeholder="new message" />
+      <button type="submit" data-testid="send-button">Send</button>
+    </form>
 
-  <ul id="messages"></ul>
+    <ul id="messages"></ul>
+  </div>
 </body>
 
 <script src="http://localhost:3000/public/chat.js"></script>
