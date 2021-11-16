@@ -1,21 +1,44 @@
-function getMessage(message, user) {
-  const timestamp = new Date();
-  const day = timestamp.getDate();
-  const month = timestamp.getMonth() + 1;
-  const year = timestamp.getFullYear();
-  const hour = timestamp.getHours();
-  const minutes = timestamp.getMinutes();
-  const seconds = timestamp.getSeconds();
+const { insertMessage } = require('../models/chatModal');
 
-  return `${day}-${month}-${year} ${hour}:${minutes}:${seconds} - ${user}: ${message}`;
+function getTime() {
+  const date = new Date();
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const hour = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+  const clientTimestamp = `${day}-${month}-${year} ${hour}:${minutes}:${seconds}`;
+  const timestamp = `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`;
+
+  return {
+    clientTimestamp,
+    timestamp,
+  };
+}
+
+function getMessage({ chatMessage, nickname }, time) {
+  return `${time} - ${nickname}: ${chatMessage}`;
 }
 
 function ioConnection(io) {
   io.on('connection', (socket) => {
-    socket.on('message', ({ chatMessage, nickname }) => {
-      const message = getMessage(chatMessage, nickname);
+    socket.on('message', async (chatMessage) => {
+      const time = getTime();
+      const message = getMessage(chatMessage, time.clientTimestamp);
+      const serverMessage = {
+        message: chatMessage.message,
+        nickname: chatMessage.nickname,
+        timestamp: time.timestamp,
+      };
 
-      io.emit('message', message);
+      try {
+        await insertMessage(serverMessage);
+        io.emit('message', message);
+      } catch (error) {
+        console.log(error);
+        socket.emit('message', 'Something went wrong');
+      }
     });
   });
 }
