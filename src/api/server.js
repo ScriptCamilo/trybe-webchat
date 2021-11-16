@@ -16,7 +16,7 @@ const io = require('socket.io')(http, {
 
 const chatController = require('../controllers/chatController');
 
-require('../utils/sockets')(io);
+require('./sockets')(io);
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'views'));
