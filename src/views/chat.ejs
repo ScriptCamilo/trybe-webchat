@@ -21,7 +21,11 @@
       <button type="submit" data-testid="send-button">Send</button>
     </form>
 
-    <ul id="messages"></ul>
+    <ul id="messages">
+      <% messages.forEach((message) => { %>
+        <li data-testid="message"><%= message %></li>
+      <% }) %>
+    </ul>
   </div>
 </body>
 

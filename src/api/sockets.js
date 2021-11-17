@@ -1,23 +1,25 @@
-// const { insertMessage } = require('../models/chatModel');
+const { insertMessage } = require('../models/chatModel');
 const getTime = require('../utils/getTime');
-const getMessage = require('../utils/getMessage');
+const formatMessage = require('../utils/formatMessage');
 
 function ioConnection(io) {
   io.on('connection', (socket) => {
     socket.on('message', async (chatMessage) => {
-      const time = getTime();
-      const message = getMessage(chatMessage, time.clientTimestamp);
-      // const serverMessage = {
-      //   message: chatMessage.message,
-      //   nickname: chatMessage.nickname,
-      //   timestamp: time.timestamp,
-      // };
+      const timestamp = getTime();
+
+      const serverMessage = {
+        message: chatMessage.chatMessage,
+        nickname: chatMessage.nickname,
+        timestamp,
+      };
+
+      const message = formatMessage(serverMessage);
 
       try {
-        // await insertMessage(serverMessage);
+        await insertMessage(serverMessage);
         io.emit('message', message);
       } catch (error) {
-        // console.log(error);
+        console.log(error);
         socket.emit('message', 'Something went wrong');
       }
     });

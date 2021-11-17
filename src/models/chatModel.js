@@ -4,7 +4,7 @@ const collectionName = 'messages';
 
 async function insertMessage(message) {
   const db = await connection();
-  await db.colletion(collectionName).insertOne(message);
+  await db.collection(collectionName).insertOne(message);
 }
 
 async function getMessages() {

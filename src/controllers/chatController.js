@@ -1,13 +1,11 @@
 const router = require('express').Router();
-// const { getMessages } = require('../models/chatModel');
-
-// Preciso criar um getMessages() para pegar todas as mensagens do banco
-// Preciso criar um setMessage() para adicionar uma nova mensagem ao banco
-//
+const { getMessages } = require('../models/chatModel');
+const formatMessage = require('../utils/formatMessage');
 
 router.get('/', async (_req, res, _next) => {
-  // const messages = await getMessages();
-  res.status(200).render('chat');
+  const serverMessages = await getMessages();
+  const messages = serverMessages.map((message) => formatMessage(message));
+  res.status(200).render('chat', { messages });
 });
 
 module.exports = router;

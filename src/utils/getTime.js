@@ -6,13 +6,9 @@ function getTime() {
   const hour = date.getHours();
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
-  const clientTimestamp = `${day}-${month}-${year} ${hour}:${minutes}:${seconds}`;
   const timestamp = `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`;
 
-  return {
-    clientTimestamp,
-    timestamp,
-  };
+  return timestamp;
 }
 
 module.exports = getTime;
