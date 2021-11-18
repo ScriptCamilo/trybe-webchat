@@ -2,9 +2,18 @@ const socket = window.io('http://localhost:3000');
 const messagesForm = document.querySelector('#message-form');
 const messagesList = document.querySelector('#messages');
 const messageBox = document.querySelector('#message-box');
+const onlineUsers = document.querySelector('#online-users');
 const onlineUser = document.querySelector('#online-user');
 const nicknameForm = document.querySelector('#nickname-form');
 const nicknameBox = document.querySelector('#nickname-box');
+
+function addNewOnlineUser(newUser) {
+  const li = document.createElement('li');
+  li.innerText = newUser;
+  li.setAttribute('data-testid', 'online-user');
+  li.setAttribute('class', 'foreign-user');
+  onlineUsers.appendChild(li);
+}
 
 function getUser() {
   const user = sessionStorage.getItem('user');
@@ -16,8 +25,33 @@ function clearInput(input) {
   inputBox.value = '';
 }
 
+function listenOnlineUsers() {
+  socket.on('newUser', (newUser) => {
+    addNewOnlineUser(newUser.nickname);
+  });
+
+  socket.on('onlineUsers', (users) => {
+    const onlines = users.filter(({ id }) => id !== socket.id);
+    onlines.forEach(({ nickname }) => {
+      addNewOnlineUser(nickname);
+    });
+  });
+
+  socket.on('offlineUser', (users) => {
+    const onlines = users.filter(({ id }) => id !== socket.id);
+    const previous = document.querySelectorAll('.foreign-user');
+    previous.forEach((child) => onlineUsers.removeChild(child));
+    onlines.forEach(({ nickname }) => {
+      addNewOnlineUser(nickname);
+    });
+  });
+
+  socket.emit('onlineUsers');
+}
+
 function setOnlineUser() {
   onlineUser.innerText = getUser();
+  socket.emit('newUser', getUser());
 }
 
 // https://gist.github.com/6174/6062387
@@ -70,4 +104,9 @@ window.onload = () => {
   saveUser();
   listenMessages();
   setOnlineUser();
+  listenOnlineUsers();
+};
+
+window.onbeforeunload = () => {
+  socket.disconnect();
 };
