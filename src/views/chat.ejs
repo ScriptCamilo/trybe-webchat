@@ -11,6 +11,9 @@
   <div>
     <ul id="online-users">
       <li id="online-user" data-testid="online-user"></li>
+      <% onlineUsers.forEach(({nickname}) => { %>
+        <li data-testid="online-user" class="foreign-user"><%= nickname %></li>
+      <% }) %>
     </ul>
     <form id="nickname-form">
       <input type="text" id="nickname-box" data-testid="nickname-box" placeholder="nickname" />

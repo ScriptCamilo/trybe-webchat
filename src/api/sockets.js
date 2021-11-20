@@ -1,8 +1,6 @@
-const { insertMessage } = require('../models/chatModel');
+const { insertMessage, getOnlineUsers, setOnlineUsers } = require('../models/chatModel');
 const getTime = require('../utils/getTime');
 const formatMessage = require('../utils/formatMessage');
-
-let onlineUsers = [];
 
 async function handleMessages(io, socket, chatMessage) {
   const timestamp = getTime();
@@ -31,7 +29,7 @@ function handleUsers(socket, nickname) {
     nickname,
   };
 
-  onlineUsers = onlineUsers.map((onUser) => {
+  const auxOnlineUsers = getOnlineUsers().map((onUser) => {
     if (onUser.id === socket.id) {
       userExists = true;
       return user;
@@ -39,15 +37,16 @@ function handleUsers(socket, nickname) {
     return onUser;
   });
 
-  if (userExists) return socket.broadcast.emit('offlineUser', onlineUsers);
+  setOnlineUsers(auxOnlineUsers, true);
+  if (userExists) return socket.broadcast.emit('offlineUser', auxOnlineUsers);
 
-  onlineUsers.push(user);
+  setOnlineUsers(user);
   socket.broadcast.emit('newUser', user);
 }
 
 function ioConnection(io) {
   io.on('connection', (socket) => {
-    socket.on('onlineUsers', () => socket.emit('onlineUsers', onlineUsers)); // Send online users to new connections
+    socket.emit('onlineUsers', getOnlineUsers()); // Send online users to new connections
 
     socket.on('message', async (chatMessage) => {
       await handleMessages(io, socket, chatMessage);
@@ -56,10 +55,13 @@ function ioConnection(io) {
     socket.on('newUser', (nickname) => handleUsers(socket, nickname)); // Send new user to old connections
 
     socket.on('disconnect', () => {
-      onlineUsers = onlineUsers.filter(({ id }) => id !== socket.id);
-      io.emit('offlineUser', onlineUsers);
+      const auxOnlineUsers = getOnlineUsers().filter(({ id }) => id !== socket.id);
+      setOnlineUsers(auxOnlineUsers, true);
+      io.emit('offlineUser', auxOnlineUsers);
     });
   });
+
+  io.emit('connection', 'teste');
 }
 
 module.exports = ioConnection;
