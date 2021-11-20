@@ -25,10 +25,21 @@ async function handleMessages(io, socket, chatMessage) {
 }
 
 function handleUsers(socket, nickname) {
+  let userExists = false;
   const user = {
     id: socket.id,
     nickname,
   };
+
+  onlineUsers = onlineUsers.map((onUser) => {
+    if (onUser.id === socket.id) {
+      userExists = true;
+      return user;
+    }
+    return onUser;
+  });
+
+  if (userExists) return socket.broadcast.emit('offlineUser', onlineUsers);
 
   onlineUsers.push(user);
   socket.broadcast.emit('newUser', user);
