@@ -46,7 +46,7 @@ function handleUsers(socket, nickname) {
 
 function ioConnection(io) {
   io.on('connection', (socket) => {
-    socket.emit('onlineUsers', getOnlineUsers()); // Send online users to new connections
+    // socket.emit('onlineUsers', getOnlineUsers()); // Send online users to new connections
 
     socket.on('message', async (chatMessage) => {
       await handleMessages(io, socket, chatMessage);

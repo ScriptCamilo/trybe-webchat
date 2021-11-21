@@ -30,12 +30,12 @@ function listenOnlineUsers() {
     addNewOnlineUser(newUser.nickname);
   });
 
-  socket.on('onlineUsers', (users) => {
-    const onlines = users.filter(({ id }) => id !== socket.id);
-    onlines.forEach(({ nickname }) => {
-      addNewOnlineUser(nickname);
-    });
-  });
+  // socket.on('onlineUsers', (users) => {
+  //   const onlines = users.filter(({ id }) => id !== socket.id);
+  //   onlines.forEach(({ nickname }) => {
+  //     addNewOnlineUser(nickname);
+  //   });
+  // });
 
   socket.on('offlineUser', (users) => {
     const onlines = users.filter(({ id }) => id !== socket.id);
@@ -45,8 +45,6 @@ function listenOnlineUsers() {
       addNewOnlineUser(nickname);
     });
   });
-
-  socket.emit('onlineUsers');
 }
 
 function setOnlineUser() {
